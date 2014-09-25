@@ -6,6 +6,7 @@
 #include "advdiffshader.h"
 #include "pressureshader.h"
 #include "velcorrshader.h"
+#include "fluiddisplayshader.h"
 
 class gpuWeather
 {
@@ -26,6 +27,10 @@ class gpuWeather
 
         // Velocity correction shader
         VelCorrShader m_velCorrShader;
+
+
+        // Display shader
+        FluidDisplayShader m_fluidDispShader;
 
         ClosedMap<float> m_result;
 

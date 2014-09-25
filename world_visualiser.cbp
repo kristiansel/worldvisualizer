@@ -41,8 +41,53 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Debug_linux">
+				<Option platforms="Unix;" />
+				<Option output="bin/Debug_linux/world_visualiser" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug_linux/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DSFML_STATIC" />
+					<Add option="-DGLEW_STATIC" />
+					<Add directory="include" />
+					<Add directory="closed_world/include" />
+					<Add directory="glsl_linalg/include" />
+					<Add directory="linalg/include" />
+				</Compiler>
+				<Linker>
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
+					<Add library="GLEW" />
+					<Add library="GL" />
+				</Linker>
+			</Target>
+			<Target title="Release_linux">
+				<Option platforms="Unix;" />
+				<Option output="bin/Release_linux/world_visualiser" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release_linux/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+					<Add directory="glsl_linalg/include" />
+					<Add directory="linalg/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
+					<Add library="GLEW" />
+					<Add library="GL" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>

@@ -133,3 +133,122 @@
 	"pressureshader.h"
 	"velcorrshader.h"
 
+1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/closedworld.cpp
+	"closedworld.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/closed_world/include/closedworld.h
+	<cmath>
+	<iostream>
+	<cstdlib>
+	<ctime>
+	"closedmap.h"
+	"weathermap.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/closed_world/include/closedmap.h
+	<cmath>
+	<iostream>
+
+1406982323 /home/kristian/dev/git/worldvisualizer/closed_world/include/weathermap.h
+	"closedmap.h"
+
+1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/heightmap.cpp
+	"heightmap.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/closed_world/include/heightmap.h
+	"closedmap.h"
+
+1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/weathermap.cpp
+	"weathermap.h"
+
+1411673458 source:/home/kristian/dev/git/worldvisualizer/main.cpp
+	<iostream>
+	<SFML/Window.hpp>
+	"renderer.h"
+	"closedworld.h"
+	"weather.h"
+	"gpuweather.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/include/renderer.h
+	<GL/glew.h>
+	<GL/gl.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<iostream>
+	<string>
+	<vector>
+	"mainshader.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/include/mainshader.h
+	"shaderbase.h"
+	"layer.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/include/shaderbase.h
+	<GL/glew.h>
+	<GL/gl.h>
+	<iostream>
+	<fstream>
+	<cstring>
+	<string>
+	<stdexcept>
+
+1411506857 /home/kristian/dev/git/worldvisualizer/include/layer.h
+	<iostream>
+	"GL/glew.h"
+	"GL/gl.h"
+
+1406982323 /home/kristian/dev/git/worldvisualizer/include/weather.h
+	"closedmap.h"
+	<iostream>
+	<cmath>
+	<cstdlib>
+
+1411676785 /home/kristian/dev/git/worldvisualizer/include/gpuweather.h
+	"closedmap.h"
+	"advdiffshader.h"
+	"pressureshader.h"
+	"velcorrshader.h"
+	"fluiddisplayshader.h"
+
+1411675841 /home/kristian/dev/git/worldvisualizer/include/advdiffshader.h
+	"shaderbase.h"
+	"closedmap.h"
+
+1411675410 /home/kristian/dev/git/worldvisualizer/include/pressureshader.h
+	"shaderbase.h"
+
+1411675879 /home/kristian/dev/git/worldvisualizer/include/velcorrshader.h
+	"shaderbase.h"
+
+1411676014 source:/home/kristian/dev/git/worldvisualizer/src/advdiffshader.cpp
+	"advdiffshader.h"
+
+1411677097 source:/home/kristian/dev/git/worldvisualizer/src/gpuweather.cpp
+	"gpuweather.h"
+
+1411663716 source:/home/kristian/dev/git/worldvisualizer/src/layer.cpp
+	"layer.h"
+
+1411583388 source:/home/kristian/dev/git/worldvisualizer/src/mainshader.cpp
+	"mainshader.h"
+
+1411675970 source:/home/kristian/dev/git/worldvisualizer/src/pressureshader.cpp
+	"pressureshader.h"
+
+1406982323 source:/home/kristian/dev/git/worldvisualizer/src/renderer.cpp
+	"renderer.h"
+
+1406982323 source:/home/kristian/dev/git/worldvisualizer/src/shaderbase.cpp
+	"shaderbase.h"
+
+1411676041 source:/home/kristian/dev/git/worldvisualizer/src/velcorrshader.cpp
+	"velcorrshader.h"
+
+1406982323 source:/home/kristian/dev/git/worldvisualizer/src/weather.cpp
+	"weather.h"
+
+1411676933 /home/kristian/dev/git/worldvisualizer/include/fluiddisplayshader.h
+	"shaderbase.h"
+
+1411676929 source:/home/kristian/dev/git/worldvisualizer/src/fluiddisplayshader.cpp
+	"fluiddisplayshader.h"
+

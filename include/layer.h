@@ -36,7 +36,7 @@ class Layer
         GLuint getTexture();
 
         void init(unsigned int dimensions);
-        void loadLayerData(unsigned int dim, void* layerData);
+        void loadLayerData(unsigned int dim, void* layerData, bool packTo0_1range = false);
         void updateLayerData(void* layerData);
 
     protected:

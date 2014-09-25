@@ -33,15 +33,20 @@ gpuWeather::gpuWeather(unsigned int dim) :
             float* s_node = &source[n_valsPerCell*i*dim+n_valsPerCell*j];
             s_node[0] = 0.0; s_node[1] = 0.0; s_node[2] = 0.0;
 
-            if (i/(float)(dim) > 0.4 && i/(float)(dim) < 0.6 &&
-                j/(float)(dim) > 0.4 && j/(float)(dim) < 0.6)
+            float* vp_node = &vx_vy_p[n_valsPerCell*i*dim+n_valsPerCell*j];
+            vp_node[0] = 0.0; vp_node[1] = 0.0; vp_node[2] = 1.0; // set pressure to one
+
+            if (i/(float)(dim) > 0.0 && i/(float)(dim) < 0.2 &&
+                j/(float)(dim) > 0.2 && j/(float)(dim) < 0.4)
             {
-                s_node[0] = 1.f;
-                s_node[1] = 1.f;
+                //s_node[0] = 1.f;
+                //s_node[1] = 1.f;
+
+                vp_node[0] = 1.f;
+                vp_node[1] = 1.f;
             }
 
-            float* vp_node = &vx_vy_p[n_valsPerCell*i*dim+n_valsPerCell*j];
-            vp_node[0] = 0.0; vp_node[1] = 0.0; vp_node[2] = 0.0;
+
         }
     }
 
@@ -53,17 +58,18 @@ gpuWeather::gpuWeather(unsigned int dim) :
 
     delete [] source;
 //
-//    m_pressShader.init(m_advdiffShader.getDivergent(),  // use as input texture
-//                       m_params.density, // use as uniform
-//                       m_params.viscosity,  // use as uniform
-//                       m_simParams.dl);  // use as uniform
+    m_pressShader.init(dim, m_advdiffShader.getXdashTextureID(),  // use as input texture
+                       m_params.density, // use as uniform
+                       m_params.viscosity,  // use as uniform
+                       m_simParams.dl);  // use as uniform
 //
-//    m_velCorrShader.init(m_advdiffShader.getDivergent(),  // use as input texture
-//                         m_pressShader.getPressureField(),  // use as input texture
-//                         m_params.density, // use as uniform
-//                         m_params.viscosity, // use as uniform
-//                         m_simParams.dl); // use as uniform
+    m_velCorrShader.init(dim, m_advdiffShader.getInitCondTextureID(),
+                         m_params.density, // use as uniform
+                         m_params.viscosity, // use as uniform
+                         m_simParams.dl); // use as uniform
 //
+    m_fluidDispShader.init();
+
 //    // load some data
 //    m_pressShader.initialPressure(dim, /*pressure data*/);
 //    m_velCorrShader.initialVelocity(dim, /*vx data*/, /*vy data*/);
@@ -77,11 +83,15 @@ gpuWeather::gpuWeather(unsigned int dim) :
 void gpuWeather::step(float dt)
 {
     // switch to adv/diffusion shader
-    m_advdiffShader.step(dt);
-//    m_pressShader.step(dt);
-//    m_velCorrShader.step(dt);
+    m_advdiffShader.step(dt, false);
+    GLuint tex_for_next = m_pressShader.step(dt, 50, false); // iterations
+    GLuint solution_tex = m_velCorrShader.step(dt, tex_for_next, false);
+
+    m_fluidDispShader.draw(m_advdiffShader.getInitCondTextureID());
 
     // extract some info
+
+
 }
 
 gpuWeather::~gpuWeather()

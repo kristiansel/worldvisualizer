@@ -3,7 +3,7 @@
 out vec4 frag_color;
 in vec2 texcoord;
 
-uniform sampler2D layerTexture;
+uniform sampler2DRect layerTexture;
 
 uniform float max_val;
 uniform float min_val;
@@ -25,13 +25,18 @@ void main()
     vec4 color;
 
 
-    float mapped_val = (val>max_val) ? max_val : ((val<min_val) ? min_val : (val-min_val)/(max_val-min_val));
+    //float mapped_val = (val>max_val) ? max_val : ((val<min_val) ? min_val : (val-min_val)/(max_val-min_val));
+    float mapped_val = (val > 0.5) ? 1 : 0;
+
+
     color.r = 0.5*(1.0-cos(3.14*mapped_val));
     color.b = 0.5*(1.0+cos(3.14*mapped_val));
     color.g = 0.5*(1.0-cos(2*3.14*mapped_val));
     color.a = 1.0;
 
-    color = vec4(color_transf*color.xyz, alpha);
+    //color = vec4(color_transf*color.xyz, alpha);
+
+    color = vec4(color.xyz, alpha);
 
 //    color.a = 1.0 - abs((color.r+color.g+color.b)-(1.5-0.5*cos(2*3.14*mapped_val)));
 

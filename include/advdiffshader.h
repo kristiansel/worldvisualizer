@@ -15,7 +15,10 @@ class AdvDiffShader : public ShaderBase
                                 float density,     // use as uniform
                                 float viscosity,   // use as uniform
                                 float dl);         // use as uniform
-        void step(float dt);
+        void step(float dt, bool draw_to_screen = false);
+
+        GLuint getXdashTextureID();
+        GLuint getInitCondTextureID();
 
     protected:
     private:
@@ -24,11 +27,11 @@ class AdvDiffShader : public ShaderBase
             GLuint x_prev;
             GLuint source;
 
-            GLuint rho;
-            GLuint mu;
-            GLuint dl;
+            GLuint rho; // density
+            GLuint mu;  // viscosity
+            GLuint dl;  // physical grid distance
             GLuint dt;
-            GLuint di;
+            GLuint di; // distance in texture coordinate between values
         } uniforms;
 
         struct ConstUniformValues
@@ -45,10 +48,13 @@ class AdvDiffShader : public ShaderBase
             GLuint source;
         } textures;
 
-        struct FrameBuffer
+        struct Buffers
         {
             GLuint frame;
             GLuint texture;
+
+            // Vertex buffer
+            GLuint vertex_buffer;
         } buffers;
 };
 

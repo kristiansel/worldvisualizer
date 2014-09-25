@@ -55,6 +55,14 @@ void MainShader::draw(Layer layer)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, layer.getTexture());
 
+//    std::cout << "layer.max = " << layer.getMax() << "\n";
+//    std::cout << "layer.getMin = " << layer.getMin() << "\n";
+//    std::cout << "layer.getCutAbove = " << layer.getCutAbove() << "\n";
+//    std::cout << "layer.getCutBelow = " << layer.getCutBelow() << "\n";
+//    std::cout << "layer.getAlpha = " << layer.getAlpha() << "\n";
+
+
+
     glUniform1f(uniforms.max_val, layer.getMax());
     glUniform1f(uniforms.min_val, layer.getMin());
     glUniform1f(uniforms.cut_above, layer.getCutAbove());
