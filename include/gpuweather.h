@@ -18,6 +18,9 @@ class gpuWeather
 
         ClosedMap<float>* getResult() {return &m_result;};
     protected:
+        void valBox(float x_min, float x_max, float y_min, float y_max,
+                    int i, int j, int dim,
+                    float* field, float val_in_box[4]);
     private:
         // Advection/Diffusion shader
         AdvDiffShader m_advdiffShader;
@@ -45,7 +48,6 @@ class gpuWeather
         struct SimParams
         {
             float dl;
-            float dt;
         } m_simParams;
 
         unsigned int m_timeStep;

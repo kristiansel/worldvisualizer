@@ -1,6 +1,6 @@
 # version 330 core
 
-out vec3 x_out; // (v_x, v_y, pressure, unused)
+out vec4 x_out; // (v_x, v_y, pressure, unused)
 in vec2 texcoord;
 
 uniform sampler2D x_prev; // v_x, v_y, p, divergence
@@ -14,39 +14,40 @@ uniform float dt;
 
 void main()
 {
-    // Get field data around point
-    float dif = di;
-
-    vec2 tex_coy_rev = vec2(texcoord.s, 1.0-texcoord.t);
-
-    vec4 field = texture(x_prev, tex_coy_rev);
-    vec4 field_N = texture(x_prev, (tex_coy_rev.xy + vec2(0.0, dif))); // y goes up the screen inverse texco/pos
-    vec4 field_S = texture(x_prev, tex_coy_rev + vec2(0.0, -dif));
-    vec4 field_E = texture(x_prev, tex_coy_rev + vec2(dif, 0.0));
-    vec4 field_W = texture(x_prev, tex_coy_rev + vec2(-dif, 0.0));
-
-    // Calculate first derivatives
-    float inv_2dl = 1.f/(2.0*dl);
-    vec4 dfield_dx = (field_E - field_W) * inv_2dl;
-    vec4 dfield_dy = (field_N - field_S) * inv_2dl;
+    vec4 field = texture(x_prev, texcoord);
+    vec4 field_N = texture(x_prev, texcoord + vec2(0.0, di)); // y goes up the screen inverse texco/pos
+    vec4 field_S = texture(x_prev, texcoord + vec2(0.0, -di));
+    vec4 field_E = texture(x_prev, texcoord + vec2(di, 0.0));
+    vec4 field_W = texture(x_prev, texcoord + vec2(-di, 0.0));
 
     float vx = field.r;
-    float dvx_dx = dfield_dx.r;
-    float dvx_dy = dfield_dy.r;
-
     float vy = field.g;
-    float dvy_dx = dfield_dx.g;
-    float dvy_dy = dfield_dy.g;
 
-    float p = field.b;
+    // Upwinding
+    float vxdvx_dx = (vx > 0) ? vx*(field.r - field_W.r)/dl : vx*(field_E.r - field.r)/dl;
+    float vydvx_dy = (vy > 0) ? vy*(field.r - field_S.r)/dl : vy*(field_N.r - field.r)/dl;
+
+    float vxdvy_dx = (vx > 0) ? vx*(field.g - field_W.g)/dl : vx*(field_E.g - field.g)/dl;
+    float vydvy_dy = (vy > 0) ? vy*(field.g - field_S.g)/dl : vy*(field_N.g - field.g)/dl;
+
+    float dvx_dt_adv = -vxdvx_dx - vydvx_dy ;
+    float dvy_dt_adv = -vxdvy_dx - vydvy_dy ;
 
     // Apply advection
-    float dvx_dt_adv = -vx * dvx_dx - vy * dvx_dy ;
-    float dvy_dt_adv = -vx * dvy_dx - vy * dvy_dy ;
-
     float out_vx = vx + dt * dvx_dt_adv;
     float out_vy = vy + dt * dvy_dt_adv;
-    float out_p = p;
+
+//    // working serial implementation
+//    // Advection (central difference, consider upwinding)
+//            float dvx_dt_adv = -m_previous->v_x(i,j) * d_dx(m_previous->v_x, i, j)
+//                               -m_previous->v_y(i,j) * d_dy(m_previous->v_x, i, j);
+//
+//            m_next->v_x(i,j) = m_previous->v_x(i,j) + m_simParams.dt * dvx_dt_adv;
+//
+//            float dvy_dt_adv = -m_previous->v_x(i,j) * d_dx(m_previous->v_y, i, j)
+//                               -m_previous->v_y(i,j) * d_dy(m_previous->v_y, i, j);
+//
+//            m_next->v_y(i,j) = m_previous->v_y(i,j) + m_simParams.dt * dvy_dt_adv;
 
     // Calculate second derivatives
     float inv_dlsq = 1.f/(dl*dl);
@@ -67,11 +68,31 @@ void main()
     out_vx = out_vx + dt * dvx_dt_diff;
     out_vy = out_vy + dt * dvy_dt_diff;
 
-    // Apply source
-    //float dvx_dt_src = 0.5*(-m_previous->v_x(i,j)+m_params.S_vx(i,j));
-    //float dvx_dt_src = (m_time<3.f) ? m_params.S_vx(i,j) : 0.f;
+//    // Serial working implementation
+//            //Diffusion (consider implicit/stable)
+//            float dvx_dt_diff = m_params.viscosity/m_params.density *
+//                              ( d2_dx2(m_previous->v_x, i, j)
+//                              + d2_dy2(m_previous->v_x, i, j) );
 //
-//                //Velocity forcing term
+//            m_next->v_x(i,j) = m_next->v_x(i,j) + m_simParams.dt * dvx_dt_diff;
+//
+//            float dvy_dt_diff = m_params.viscosity/m_params.density *
+//                              ( d2_dx2(m_previous->v_y, i, j)
+//                              + d2_dy2(m_previous->v_y, i, j) );
+//
+//            m_next->v_y(i,j) = m_next->v_y(i,j) + m_simParams.dt * dvy_dt_diff;
+
+    // forcing term
+    vec4 forcing = texture(source, texcoord);
+
+    float dvx_dt_src = 0.5*(-vx+forcing.r);
+    float dvy_dt_src = 0.5*(-vy+forcing.g);
+
+    out_vx = out_vx + dt * dvx_dt_src;
+    out_vy = out_vy + dt * dvy_dt_src;
+
+//    // Serial working implementation
+//            //Velocity forcing term
 //            float dvx_dt_src = 0.5*(-m_previous->v_x(i,j)+m_params.S_vx(i,j));
 ////            float dvx_dt_src = (m_time<3.f) ? m_params.S_vx(i,j) : 0.f;
 //
@@ -83,17 +104,10 @@ void main()
 //
 //            m_next->v_y(i,j) = m_next->v_y(i,j) + m_simParams.dt * dvy_dt_src;
 ////            m_next->v_y(i,j) = m_params.S_vy(i,j);
-//
-//            m_calc.div(i,j) = d_dx(m_next->v_x, i, j) + d_dy(m_next->v_y, i, j);
 
-
-
-
-    vec3 val = vec3(out_vx, out_vy, out_p);
-
-    // Try to output value outside 0-1 range;
-    //val = vec3(-1, 2, 100);
+    vec4 val = vec4(out_vx, out_vy, field.p, field.a);
 
     x_out = val;
-    //x_out = vec4(0.5, 0.5, 0.8, 1.0);
+
+
 }

@@ -99,6 +99,7 @@
 		<Unit filename="closed_world/src/heightmap.cpp" />
 		<Unit filename="closed_world/src/weathermap.cpp" />
 		<Unit filename="include/advdiffshader.h" />
+		<Unit filename="include/fluiddisplayshader.h" />
 		<Unit filename="include/gpuweather.h" />
 		<Unit filename="include/layer.h" />
 		<Unit filename="include/mainshader.h" />
@@ -109,9 +110,13 @@
 		<Unit filename="include/weather.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="shaders/advdiffshader.glsl" />
+		<Unit filename="shaders/fluiddisplayshader.glsl" />
 		<Unit filename="shaders/main_shader_frag.glsl" />
 		<Unit filename="shaders/main_shader_vert.glsl" />
+		<Unit filename="shaders/pressureshader.glsl" />
+		<Unit filename="shaders/velcorrshader.glsl" />
 		<Unit filename="src/advdiffshader.cpp" />
+		<Unit filename="src/fluiddisplayshader.cpp" />
 		<Unit filename="src/gpuweather.cpp" />
 		<Unit filename="src/layer.cpp" />
 		<Unit filename="src/mainshader.cpp" />

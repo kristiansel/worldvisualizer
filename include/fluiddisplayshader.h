@@ -10,7 +10,7 @@ class FluidDisplayShader : public ShaderBase
         FluidDisplayShader();
         virtual ~FluidDisplayShader();
 
-        void init();
+        void init(unsigned int dim, float dl);
 
         void draw(GLuint fluid_field_tex1/*, GLuint fluid_field_tex2*/); // second texture for later use
     protected:
@@ -18,7 +18,15 @@ class FluidDisplayShader : public ShaderBase
         struct Uniforms
         {
             GLuint x_field;
+            GLuint di;
+            GLuint dl;
         } uniforms;
+
+        struct UniformValues
+        {
+            float di;
+            float dl;
+        } uniform_vals;
 
         struct Buffers
         {

@@ -33,7 +33,7 @@ void VelCorrShader::init(unsigned int dim, GLuint init_cond_tex,
     //Generate a draw-to-texture
 //    glGenTextures(1, &buffers.texture);
 //    glBindTexture(GL_TEXTURE_2D, buffers.texture);
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, dim, dim, 0, GL_RGB, GL_FLOAT, 0);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, 0);
 //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

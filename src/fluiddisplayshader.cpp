@@ -10,7 +10,7 @@ FluidDisplayShader::~FluidDisplayShader()
     //dtor
 }
 
-void FluidDisplayShader::init()
+void FluidDisplayShader::init(unsigned int dim, float dl)
 {
     // Init its own shader
     // with input uniforms
@@ -19,6 +19,9 @@ void FluidDisplayShader::init()
  // set the uniform locations
     uniforms.x_field = glGetUniformLocation(getProgramID(), "x_field");
     glUniform1i(uniforms.x_field, 0);
+
+    uniforms.di = glGetUniformLocation(getProgramID(), "di");
+    uniforms.dl = glGetUniformLocation(getProgramID(), "dl");
 
     glEnableVertexAttribArray(0);
 
@@ -33,6 +36,9 @@ void FluidDisplayShader::init()
     glBindBuffer(GL_ARRAY_BUFFER, buffers.vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    uniform_vals.di = 1.f/((float)(dim));
+    uniform_vals.dl = dl;
 }
 
 void FluidDisplayShader::draw(GLuint fluid_field_tex1)
@@ -42,6 +48,10 @@ void FluidDisplayShader::draw(GLuint fluid_field_tex1)
 
     // switch to
     ShaderBase::switchTo();
+
+    // uniforms
+    glUniform1f(uniforms.di, uniform_vals.di);
+    glUniform1f(uniforms.dl, uniform_vals.dl);
 
     // activate textures
     glActiveTexture(GL_TEXTURE0);

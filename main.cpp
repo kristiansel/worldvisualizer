@@ -27,7 +27,7 @@ int main()
 
     // init
     window.create(sf::VideoMode(res_x, res_y), "my test window");
-    window.setVerticalSyncEnabled(true);
+    //window.setVerticalSyncEnabled(true);
 
     renderer.init(res_x, res_y);
 

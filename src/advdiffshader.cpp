@@ -38,7 +38,7 @@ void AdvDiffShader::init(unsigned int dim,
     //Generate a draw-to-texture
     glGenTextures(1, &buffers.texture);
     glBindTexture(GL_TEXTURE_2D, buffers.texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, dim, dim, 0, GL_RGB, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -62,7 +62,7 @@ void AdvDiffShader::init(unsigned int dim,
     // Init its own textures and load the data
     glGenTextures(1, &textures.vx_vy_p);
     glBindTexture(GL_TEXTURE_2D, textures.vx_vy_p);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, dim, dim, 0, GL_RGB, GL_FLOAT, vx_vy_p);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, vx_vy_p);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -74,7 +74,7 @@ void AdvDiffShader::init(unsigned int dim,
     // Init its own textures and load the data
     glGenTextures(1, &textures.source);
     glBindTexture(GL_TEXTURE_2D, textures.source);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, dim, dim, 0, GL_RGB, GL_FLOAT, source);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, source);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

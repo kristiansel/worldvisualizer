@@ -39,11 +39,6 @@ class VelCorrShader : public ShaderBase
             float di;
         } uniform_vals;
 
-//        struct Textures
-//        {
-//            GLuint x_pcorr
-//        } textures;
-
         struct Buffers
         {
             GLuint frame;
