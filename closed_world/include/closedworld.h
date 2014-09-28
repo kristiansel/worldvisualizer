@@ -20,6 +20,7 @@ class ClosedWorld
 
 
         ClosedMap<float>* getHeightMap() {return &m_height_map;};
+        float* getHeightData() {return m_height_map.getDataPtr();};
         float* getRadiationData(float t);
 
         WeatherMap m_weatherMap;

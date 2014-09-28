@@ -10,6 +10,7 @@ class VelCorrShader : public ShaderBase
         virtual ~VelCorrShader();
 
         void init(unsigned int dim, GLuint init_cond_tex,
+                                void* h_map,
                                 float density,     // use as uniform
                                 float viscosity,   // use as uniform
                                 float dl);         // use as uniform
@@ -23,6 +24,7 @@ class VelCorrShader : public ShaderBase
         struct Uniforms
         {
             GLuint x_pcorr;
+            GLuint h_map;
 
             GLuint rho; // density
             GLuint mu;  // viscosity
@@ -30,6 +32,11 @@ class VelCorrShader : public ShaderBase
             GLuint dt;
             GLuint di; // distance in texture coordinate between values
         } uniforms;
+
+        struct Textures
+        {
+            GLuint h_map;
+        } textures;
 
         struct ConstUniformValues
         {

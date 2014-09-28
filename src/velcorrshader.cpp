@@ -11,6 +11,7 @@ VelCorrShader::~VelCorrShader()
 }
 
 void VelCorrShader::init(unsigned int dim, GLuint init_cond_tex,
+                         void* h_map,
                          float density,
                          float viscosity,
                          float dl)
@@ -22,6 +23,9 @@ void VelCorrShader::init(unsigned int dim, GLuint init_cond_tex,
  // set the uniform locations
     uniforms.x_pcorr = glGetUniformLocation(getProgramID(), "x_pcorr");
     glUniform1i(uniforms.x_pcorr, 0);
+
+    uniforms.h_map = glGetUniformLocation(getProgramID(), "h_map");
+    glUniform1i(uniforms.h_map, 1);
 
     uniforms.rho = glGetUniformLocation(getProgramID(), "rho");
     uniforms.mu = glGetUniformLocation(getProgramID(), "mu");
@@ -53,6 +57,17 @@ void VelCorrShader::init(unsigned int dim, GLuint init_cond_tex,
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    // Init its own textures and load data
+    glGenTextures(1, &textures.h_map);
+    glBindTexture(GL_TEXTURE_2D, textures.h_map);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, dim, dim, 0, GL_RED, GL_FLOAT, h_map);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glEnableVertexAttribArray(0);
@@ -98,6 +113,9 @@ GLuint VelCorrShader::step(float dt, GLuint source_tex, bool draw_to_screen)
     // activate textures
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, source_tex);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textures.h_map);
 
     // turn off alpha blending
     glDisable(GL_BLEND);

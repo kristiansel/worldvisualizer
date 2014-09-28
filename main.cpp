@@ -13,7 +13,7 @@ Renderer renderer;
 
 int main()
 {
-    int res_x = 1024;
+    int res_x = 512;
     int res_y = res_x;
 
     ClosedWorld world((int)(log2(res_x)));
@@ -27,7 +27,7 @@ int main()
 
     // init
     window.create(sf::VideoMode(res_x, res_y), "my test window");
-    //window.setVerticalSyncEnabled(true);
+    window.setVerticalSyncEnabled(false);
 
     renderer.init(res_x, res_y);
 
@@ -87,13 +87,17 @@ int main()
 //    renderer.loadLayer(1, weather.m_params.S_vx.getDataPtr());
 
     // GPU weather
-    gpuWeather gpu_weather(res_x);
+    gpuWeather gpu_weather(res_x, world.getHeightData());
 
 // Slow event based input
     bool running = true;
 
+    sf::Clock clock;
+    float dt = 0.0;
+
     while (running==true)
     {
+        clock.restart();
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -137,11 +141,13 @@ int main()
         // draw
         //renderer.draw();
 
-        gpu_weather.step(0.01666);
+        for (int i = 0; i<10; i++)
+            gpu_weather.step(0.01666);
 
         window.display();
 
-
+        dt = clock.getElapsedTime().asSeconds();
+        std::cout << "dt = " << dt << "\n";
     }
 
     cout << "Hello world!" << endl;

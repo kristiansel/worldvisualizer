@@ -4,6 +4,7 @@ out vec4 x_out; // (v_x, v_y, pressure, unused)
 in vec2 texcoord;
 
 uniform sampler2D x_pcorr; // v_x, v_y, p, ??
+uniform sampler2D h_map;
 
 uniform float rho;
 uniform float mu;
@@ -36,22 +37,24 @@ void main()
     float vy = field.g + dt * dvy_dt_press;
 
     // advection of transported quantity (alpha channel)
-//    float da_dx = dfield_dx.a;
-//    float da_dy = dfield_dy.a;
-//
-//    float da_dt_adv = -vx*da_dx - vy*da_dy;
-//    //float a_out = max(field.a + dt*da_dt_adv, 0.0);
-//    float a_out = field.a + dt*da_dt_adv;
-
     //upwinding?
     float vxda_dx = (vx > 0) ? vx*(field.a - field_W.a)/dl : vx*(field_E.a - field.a)/dl;
     float vyda_dy = (vy > 0) ? vy*(field.a - field_S.a)/dl : vy*(field_N.a - field.a)/dl;
 
     float a_out = field.a - dt * (vxda_dx + vyda_dy);
 
+    // generate/consume some a...
+    float h_map_sample = texture(h_map, texcoord).r;
+
+    float da_dt_source = (h_map_sample < 0) ? sin(2*0.006283185*h_map_sample)/10.f : 0; // 2*pi*x/1000 == 0.006283185
+
+    a_out = a_out + dt*da_dt_source;
+
 
 
     x_out = vec4(vx, vy, field.b, a_out);
+
+    //x_out = field;
 
 // serial working implementation
 //            //pressure grad

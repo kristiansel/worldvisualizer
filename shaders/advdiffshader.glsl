@@ -4,7 +4,7 @@ out vec4 x_out; // (v_x, v_y, pressure, unused)
 in vec2 texcoord;
 
 uniform sampler2D x_prev; // v_x, v_y, p, divergence
-uniform sampler2D source; // Sv_x, Sv_y, ?, ?
+uniform sampler2D v_source; // velocity source
 
 uniform float rho;
 uniform float mu;
@@ -82,28 +82,16 @@ void main()
 //
 //            m_next->v_y(i,j) = m_next->v_y(i,j) + m_simParams.dt * dvy_dt_diff;
 
-    // forcing term
-    vec4 forcing = texture(source, texcoord);
+    // apply source
+//    vec4 vs_term = texture(v_source, texcoord);
+//    out_vx = (vs_term.b > 0.1) ? out_vx + dt*(vs_term.r - out_vx) : out_vx;
+//    out_vy = (vs_term.b > 0.1) ? out_vy + dt*(vs_term.g - out_vy) : out_vy;
 
-    float dvx_dt_src = 0.5*(-vx+forcing.r);
-    float dvy_dt_src = 0.5*(-vy+forcing.g);
+//        // apply source
+    vec4 vs_term = texture(v_source, texcoord);
+    out_vx = (1.f-vs_term.b)*out_vx + (vs_term.b)*(out_vx + dt*(vs_term.r - out_vx));
+    out_vy = (1.f-vs_term.a)*out_vy + (vs_term.a)*(out_vy + dt*(vs_term.g - out_vy));
 
-    out_vx = out_vx + dt * dvx_dt_src;
-    out_vy = out_vy + dt * dvy_dt_src;
-
-//    // Serial working implementation
-//            //Velocity forcing term
-//            float dvx_dt_src = 0.5*(-m_previous->v_x(i,j)+m_params.S_vx(i,j));
-////            float dvx_dt_src = (m_time<3.f) ? m_params.S_vx(i,j) : 0.f;
-//
-//            m_next->v_x(i,j) = m_next->v_x(i,j) + m_simParams.dt * dvx_dt_src;
-////            m_next->v_x(i,j) = m_params.S_vx(i,j);
-//
-//            float dvy_dt_src = 0.5*(-m_previous->v_y(i,j)+m_params.S_vy(i,j));
-////            float dvy_dt_src = (m_time<3.f) ? m_params.S_vy(i,j) : 0.f;
-//
-//            m_next->v_y(i,j) = m_next->v_y(i,j) + m_simParams.dt * dvy_dt_src;
-////            m_next->v_y(i,j) = m_params.S_vy(i,j);
 
     vec4 val = vec4(out_vx, out_vy, field.p, field.a);
 

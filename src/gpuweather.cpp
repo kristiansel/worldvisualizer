@@ -1,13 +1,13 @@
 #include "gpuweather.h"
 
-gpuWeather::gpuWeather(unsigned int dim) :
+gpuWeather::gpuWeather(unsigned int dim, float* height_data) :
     m_result(ClosedMap<float>(log2(dim))),
     m_params(
                  {
                     ClosedMap<float>(log2(dim)), //S_vx
                     ClosedMap<float>(log2(dim)), //S_vy
                     1.0, //density
-                    10  //viscosity
+                    0.001  //viscosity
                  }
             ),
     m_simParams(
@@ -55,7 +55,7 @@ gpuWeather::gpuWeather(unsigned int dim) :
 
             //float* tr_node = &transp[n_valsPerCell*i*dim+n_valsPerCell*j];
             //tr_node[0] = 0.0; tr_node[1] = 0.0; tr_node[2] = 0.0; tr_node[3] = 0.0; // Transported quantities
-//
+
 //            if (i/(float)(dim) > 0.0 && i/(float)(dim) < 0.2 &&
 //                j/(float)(dim) > 0.2 && j/(float)(dim) < 0.4)
 //            {
@@ -71,28 +71,31 @@ gpuWeather::gpuWeather(unsigned int dim) :
 //                //tr_node[1] = 1.f;
 //            }
 
-//            float source_vals1[4] = {3.f, -1.f, 0.f, 0.f};
-//
-//            valBox(0, 1.0, 0.6, 0.7,
-//                   i, j, dim,
-//                   s_node, source_vals1);
-//
-//            float source_vals2[4] = {-3.f, 1.f, 0.f, 0.f};
-//
-//            valBox(0, 1.0, 0.3, 0.4,
-//                   i, j, dim,
-//                   s_node, source_vals2);
+            //vp_node[3] = height_data[((4*i)%(dim/4))*dim+((4*j)%(dim/4))] > 0;
 
-            float cloud_vals[4] = {3.f, 3.f, 0.f, 1.f};
+            //vp_node[3] = height_data[(i/2)*dim+j/2] > 0;
 
+            // r: s_vx, g: s_vy, b: w_s_vx, a: w_s_vy
+            float source_vals1[4] = {3.f, -1.f, 1.f, 1.f};
+//
+            valBox(0.2, 0.3, 0.6, 0.7,
+                   i, j, dim,
+                   s_node, source_vals1);
+
+            // r: s_vx, g: s_vy, b: w_s_vx, a: w_s_vy
+            float source_vals2[4] = {-3.f, 1.f, 1.f, 1.f};
+//
+            valBox(0.7, 0.8, 0.3, 0.4,
+                   i, j, dim,
+                   s_node, source_vals2);
+
+
+            float cloud_vals[4] = {0.0, 0.0, 1.0, 1.0};
             for (int k = 0; k<num_pts; k++)
             {
                 valBox(rand_x[k], rand_x[k]+rand_xs[k], rand_y[k], rand_y[k]+rand_ys[k],
                        i, j, dim,
                        vp_node, cloud_vals);
-                valBox(rand_x[k], rand_x[k]+rand_xs[k], rand_y[k], rand_y[k]+rand_ys[k],
-                       i, j, dim,
-                       source, cloud_vals);
             }
 
 
@@ -106,11 +109,13 @@ gpuWeather::gpuWeather(unsigned int dim) :
                          m_simParams.dl);  // use as uniform
 //
     m_pressShader.init(dim, m_advdiffShader.getXdashTextureID(),  // use as input texture
+                       height_data,
                        m_params.density, // use as uniform
                        m_params.viscosity,  // use as uniform
                        m_simParams.dl);  // use as uniform
 //
     m_velCorrShader.init(dim, m_advdiffShader.getInitCondTextureID(),
+                         height_data,
                          m_params.density, // use as uniform
                          m_params.viscosity, // use as uniform
                          m_simParams.dl); // use as uniform

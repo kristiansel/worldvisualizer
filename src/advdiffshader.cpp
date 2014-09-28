@@ -24,8 +24,8 @@ void AdvDiffShader::init(unsigned int dim,
  // set the uniform locations
     uniforms.x_prev = glGetUniformLocation(getProgramID(), "x_prev");
     glUniform1i(uniforms.x_prev, 0);
-
-    uniforms.source = glGetUniformLocation(getProgramID(), "source");
+//
+    uniforms.source = glGetUniformLocation(getProgramID(), "v_source");
     glUniform1i(uniforms.source, 1);
 
     uniforms.rho = glGetUniformLocation(getProgramID(), "rho");

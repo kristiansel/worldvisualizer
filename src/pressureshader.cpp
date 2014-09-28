@@ -12,6 +12,7 @@ PressureShader::~PressureShader()
 
 void PressureShader::init(unsigned int dim,
                          GLuint x_dash_tex_id,
+                         float* source,
                          float density,
                          float viscosity,
                          float dl)
@@ -23,6 +24,9 @@ void PressureShader::init(unsigned int dim,
  // set the uniform locations
     uniforms.x_dash = glGetUniformLocation(getProgramID(), "x_dash");
     glUniform1i(uniforms.x_dash, 0);
+
+    uniforms.source = glGetUniformLocation(getProgramID(), "div_source");
+    glUniform1i(uniforms.source, 1);
 
     uniforms.rho = glGetUniformLocation(getProgramID(), "rho");
     uniforms.mu = glGetUniformLocation(getProgramID(), "mu");
@@ -78,18 +82,20 @@ void PressureShader::init(unsigned int dim,
     glBindTexture(GL_TEXTURE_2D, 0);
 
     textures.x_dash = x_dash_tex_id;
+//
+//    float*
+//    for (int i = 0; i<dim*dim; i++)
+//        std::cout << "source: " << i << " = " << source[i] << "\n";
 
-//    // Init its own textures (no data to load yet)
-//    glGenTextures(1, &textures.x_dash);
-//    glBindTexture(GL_TEXTURE_2D, textures.x_dash);
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, 0);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-////    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-////    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-//    glBindTexture(GL_TEXTURE_2D, 0);
+    // Init its own textures and load data
+    glGenTextures(1, &textures.source);
+    glBindTexture(GL_TEXTURE_2D, textures.source);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, dim, dim, 0, GL_RED, GL_FLOAT, source);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glEnableVertexAttribArray(0);
 
@@ -144,6 +150,9 @@ GLuint PressureShader::step(float dt, int iterations, bool draw_to_screen)
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, read_texture);
 
+        // activate textures
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textures.source);
         // render
         glBindBuffer(GL_ARRAY_BUFFER, buffers.vertex_buffer);
         glVertexAttribPointer(

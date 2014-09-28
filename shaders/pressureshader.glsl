@@ -4,6 +4,7 @@ out vec4 x_out; // (v_x, v_y, pressure, unused)
 in vec2 texcoord;
 
 uniform sampler2D x_dash; // intermediate solution (only advection/diffusion/source applied)
+uniform sampler2D div_source;
 
 uniform float rho;
 uniform float mu;
@@ -27,11 +28,20 @@ void main()
     float dvx_dx = dfield_dx.r;
     float dvy_dy = dfield_dy.g;
 
+    // source is divergence:
+    // dvx_dx + dvy_dy = div_source(x, y);
+
+    //vec4 s_term = texture(div_source, texcoord);
+
+    //float div = dvx_dx + dvy_dy - max(s_term.r/50000.f, 0.0);
+
     float div = dvx_dx + dvy_dy;
 
     float next_p = (field_W.b + field_E.b + field_N.b + field_S.b - dl*dl*div*rho/dl) / 4.f;
 
     x_out = vec4(field.rg, next_p, field.a);
+
+    //x_out = vec4(s_term.r < 1, s_term.r < 1, s_term.r < 1, 1.0);
 
 
 // serial working implementation

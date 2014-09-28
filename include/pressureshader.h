@@ -10,6 +10,7 @@ class PressureShader : public ShaderBase
         virtual ~PressureShader();
 
         void init(unsigned int dim, GLuint x_dash_tex_id,
+                                float* source,
                                 float density,     // use as uniform
                                 float viscosity,   // use as uniform
                                 float dl);         // use as uniform
@@ -23,6 +24,7 @@ class PressureShader : public ShaderBase
         struct Uniforms
         {
             GLuint x_dash;
+            GLuint source;
 
             GLuint rho; // density
             GLuint mu;  // viscosity
@@ -42,6 +44,7 @@ class PressureShader : public ShaderBase
         struct Textures
         {
             GLuint x_dash;
+            GLuint source;
         } textures;
 
         struct Buffers

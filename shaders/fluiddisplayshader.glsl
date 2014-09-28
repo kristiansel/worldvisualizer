@@ -40,8 +40,12 @@ void main()
     vec4 div_out = vec4(div, div, div, 1.0);
 
 
+    vec4 combi_out = vec4(field.a, (div<0) ? -div*10 : 0, (div>0) ? div*10 : 0, 1.0);
+
+
     //x_out = field_out; // vx, vy, p
     //x_out = fieldsc_out; // vx, vy, p
     //x_out = div_out; // divergence
-    x_out = a_out; // t
+    //x_out = a_out; // t
+    x_out = combi_out;
 }
