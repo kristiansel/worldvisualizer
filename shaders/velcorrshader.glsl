@@ -46,11 +46,12 @@ void main()
     // generate/consume some a...
     float h_map_sample = texture(h_map, texcoord).r;
 
-    float da_dt_source = (h_map_sample < 0) ? sin(2*0.006283185*h_map_sample)/10.f : 0; // 2*pi*x/1000 == 0.006283185
+    float da_dt_source = (h_map_sample < 0) ? max((sin(2*0.006283185*h_map_sample)-field.a)/100.f, 0) : 0; // 2*pi*x/1000 == 0.006283185
 
-    a_out = a_out + dt*da_dt_source;
+    float pressure_threshold = 30;
+    float da_dt_sink = (h_map_sample > 0) ? max(sin(2*0.006283185*h_map_sample)*field.a/10.f, 0) : 0; // 2*pi*x/1000 == 0.006283185
 
-
+    a_out = a_out + dt*(da_dt_source-da_dt_sink);
 
     x_out = vec4(vx, vy, field.b, a_out);
 

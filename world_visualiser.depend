@@ -160,13 +160,14 @@
 1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/weathermap.cpp
 	"weathermap.h"
 
-1411906720 source:/home/kristian/dev/git/worldvisualizer/main.cpp
+1412197965 source:/home/kristian/dev/git/worldvisualizer/main.cpp
 	<iostream>
 	<SFML/Window.hpp>
 	"renderer.h"
 	"closedworld.h"
 	"weather.h"
 	"gpuweather.h"
+	"comprgassim.h"
 
 1406982323 /home/kristian/dev/git/worldvisualizer/include/renderer.h
 	<GL/glew.h>
@@ -202,14 +203,14 @@
 	<cmath>
 	<cstdlib>
 
-1411905489 /home/kristian/dev/git/worldvisualizer/include/gpuweather.h
+1412022811 /home/kristian/dev/git/worldvisualizer/include/gpuweather.h
 	"closedmap.h"
 	"advdiffshader.h"
 	"pressureshader.h"
 	"velcorrshader.h"
 	"fluiddisplayshader.h"
 
-1411908233 /home/kristian/dev/git/worldvisualizer/include/advdiffshader.h
+1412029192 /home/kristian/dev/git/worldvisualizer/include/advdiffshader.h
 	"shaderbase.h"
 	"closedmap.h"
 
@@ -219,10 +220,10 @@
 1411910058 /home/kristian/dev/git/worldvisualizer/include/velcorrshader.h
 	"shaderbase.h"
 
-1411908514 source:/home/kristian/dev/git/worldvisualizer/src/advdiffshader.cpp
+1412029475 source:/home/kristian/dev/git/worldvisualizer/src/advdiffshader.cpp
 	"advdiffshader.h"
 
-1411909961 source:/home/kristian/dev/git/worldvisualizer/src/gpuweather.cpp
+1412190937 source:/home/kristian/dev/git/worldvisualizer/src/gpuweather.cpp
 	"gpuweather.h"
 
 1411663716 source:/home/kristian/dev/git/worldvisualizer/src/layer.cpp
@@ -249,6 +250,25 @@
 1411817896 /home/kristian/dev/git/worldvisualizer/include/fluiddisplayshader.h
 	"shaderbase.h"
 
-1411817888 source:/home/kristian/dev/git/worldvisualizer/src/fluiddisplayshader.cpp
+1412023028 source:/home/kristian/dev/git/worldvisualizer/src/fluiddisplayshader.cpp
 	"fluiddisplayshader.h"
+
+1412199656 source:/home/kristian/dev/git/worldvisualizer/src/gasjacobishader.cpp
+	"gasjacobishader.h"
+
+1412199664 /home/kristian/dev/git/worldvisualizer/include/gasjacobishader.h
+	"shaderbase.h"
+
+1412191640 source:/home/kristian/dev/git/worldvisualizer/src/gasvisualshader.cpp
+	"gasvisualshader.h"
+
+1412191190 /home/kristian/dev/git/worldvisualizer/include/gasvisualshader.h
+	"shaderbase.h"
+
+1412197925 source:/home/kristian/dev/git/worldvisualizer/src/comprgassim.cpp
+	"comprgassim.h"
+
+1412190962 /home/kristian/dev/git/worldvisualizer/include/comprgassim.h
+	"gasjacobishader.h"
+	"gasvisualshader.h"
 

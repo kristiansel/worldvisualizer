@@ -32,6 +32,9 @@ class AdvDiffShader : public ShaderBase
             GLuint dl;  // physical grid distance
             GLuint dt;
             GLuint di; // distance in texture coordinate between values
+
+            GLuint use_source;
+            GLuint source_dir;
         } uniforms;
 
         struct ConstUniformValues
@@ -40,6 +43,9 @@ class AdvDiffShader : public ShaderBase
             float mu;
             float dl;
             float di;
+
+            float sv_x;
+            float sv_y;
         } uniform_vals;
 
         struct Textures
@@ -56,6 +62,10 @@ class AdvDiffShader : public ShaderBase
             // Vertex buffer
             GLuint vertex_buffer;
         } buffers;
+
+        // internals
+        float time;
+        bool sv_flipped;
 };
 
 #endif // ADVDIFFSHADER_H

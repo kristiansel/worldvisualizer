@@ -12,6 +12,10 @@ uniform float dl;
 uniform float di;
 uniform float dt;
 
+uniform float use_source;
+uniform vec2 source_dir;
+
+
 void main()
 {
     vec4 field = texture(x_prev, texcoord);
@@ -88,14 +92,15 @@ void main()
 //    out_vy = (vs_term.b > 0.1) ? out_vy + dt*(vs_term.g - out_vy) : out_vy;
 
 //        // apply source
-    vec4 vs_term = texture(v_source, texcoord);
-    out_vx = (1.f-vs_term.b)*out_vx + (vs_term.b)*(out_vx + dt*(vs_term.r - out_vx));
-    out_vy = (1.f-vs_term.a)*out_vy + (vs_term.a)*(out_vy + dt*(vs_term.g - out_vy));
-
+    if (use_source > 0.01)
+    {
+        vec4 vs_term = texture(v_source, texcoord);
+        vs_term.xy = source_dir;
+        out_vx = (1.f-vs_term.b)*out_vx + (vs_term.b)*(out_vx + dt*(vs_term.r - out_vx));
+        out_vy = (1.f-vs_term.a)*out_vy + (vs_term.a)*(out_vy + dt*(vs_term.g - out_vy));
+    }
 
     vec4 val = vec4(out_vx, out_vy, field.p, field.a);
 
     x_out = val;
-
-
 }

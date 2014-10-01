@@ -5,6 +5,7 @@
 #include "closedworld.h"
 #include "weather.h"
 #include "gpuweather.h"
+#include "comprgassim.h"
 
 using namespace std;
 
@@ -13,10 +14,12 @@ Renderer renderer;
 
 int main()
 {
-    int res_x = 512;
+    int res_x = 1024;
     int res_y = res_x;
 
-    ClosedWorld world((int)(log2(res_x)));
+    unsigned int fluid_sim_size = 256;
+
+    ClosedWorld world((int)(log2(fluid_sim_size)));
     Weather weather(world.m_height_map, 128);
 
     for (int i = 0; i<10; i++)
@@ -32,13 +35,13 @@ int main()
     renderer.init(res_x, res_y);
 
     // load the layers
-    renderer.loadLayer(0, res_x, world.getHeightMap()->getDataPtr());
+    //renderer.loadLayer(0, res_x, world.getHeightMap()->getDataPtr());
 
     float my_max = -9999;
     float my_min = 9999;
-    for (int i = 0; i<res_x; i++)
+    for (int i = 0; i<fluid_sim_size; i++)
     {
-        for (int j = 0; j<res_y; j++)
+        for (int j = 0; j<fluid_sim_size; j++)
         {
             float height = world.m_height_map(i,j);
             if (height > my_max) my_max = height;
@@ -49,11 +52,11 @@ int main()
     std::cout << "min height " << my_min << "\n";
 
 
-    renderer.getLayer(0)->setMax(5000.f);
-    renderer.getLayer(0)->setMin(-5000.f);
-    renderer.getLayer(0)->setCutAbove(10000.0);
-    renderer.getLayer(0)->setCutBelow(0.0);
-//
+//    renderer.getLayer(0)->setMax(5000.f);
+//    renderer.getLayer(0)->setMin(-5000.f);
+//    renderer.getLayer(0)->setCutAbove(10000.0);
+//    renderer.getLayer(0)->setCutBelow(0.0);
+////
 ////    float color0[3] = {0.2, 0.7, 0.3};
 //    float color0[3] = {0.7, 0.7, 0.4};
 //    renderer.getLayer(0)->setColorTransf(color0);
@@ -87,7 +90,10 @@ int main()
 //    renderer.loadLayer(1, weather.m_params.S_vx.getDataPtr());
 
     // GPU weather
-    gpuWeather gpu_weather(res_x, world.getHeightData());
+    //gpuWeather gpu_weather(fluid_sim_size, world.getHeightData(), res_x, res_y);
+
+    // GPU compressible gas
+    ComprGasSim compr_gas_sim(fluid_sim_size, world.getHeightData(), res_x, res_y);
 
 // Slow event based input
     bool running = true;
@@ -141,15 +147,16 @@ int main()
         // draw
         //renderer.draw();
 
-        for (int i = 0; i<10; i++)
-            gpu_weather.step(0.01666);
+//        for (int i = 0; i<10; i++)
+//            gpu_weather.step(0.01666);
+
+        compr_gas_sim.step(0.01666);
 
         window.display();
 
         dt = clock.getElapsedTime().asSeconds();
-        std::cout << "dt = " << dt << "\n";
+        //std::cout << "dt = " << dt << "\n";
     }
 
-    cout << "Hello world!" << endl;
     return 0;
 }

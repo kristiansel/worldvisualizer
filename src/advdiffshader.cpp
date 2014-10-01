@@ -1,6 +1,6 @@
 #include "advdiffshader.h"
 
-AdvDiffShader::AdvDiffShader()
+AdvDiffShader::AdvDiffShader() : time(0), sv_flipped(false)
 {
     //ctor
 }
@@ -33,6 +33,9 @@ void AdvDiffShader::init(unsigned int dim,
     uniforms.dl = glGetUniformLocation(getProgramID(), "dl");
     uniforms.di = glGetUniformLocation(getProgramID(), "di");
     uniforms.dt = glGetUniformLocation(getProgramID(), "dt");
+
+    uniforms.use_source = glGetUniformLocation(getProgramID(), "use_source");
+    uniforms.source_dir = glGetUniformLocation(getProgramID(), "source_dir");
 
 
     //Generate a draw-to-texture
@@ -108,6 +111,8 @@ void AdvDiffShader::init(unsigned int dim,
 
 void AdvDiffShader::step(float dt, bool draw_to_screen)
 {
+    time += dt;
+
     // start drawing to framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, buffers.frame);
 
@@ -124,10 +129,31 @@ void AdvDiffShader::step(float dt, bool draw_to_screen)
     glUniform1f(uniforms.di, uniform_vals.di);
     glUniform1f(uniforms.dt, dt);
 
+    if (int(time)%30<5)
+    {
+        if (!sv_flipped)
+        {
+            uniform_vals.sv_x = (float)(rand()%2000)/1000-1.f;
+            uniform_vals.sv_y = (float)(rand()%2000)/1000-1.f;
+
+            sv_flipped = true;
+        }
+    }
+    else
+    {
+        sv_flipped = false;
+    }
+
+    glUniform1f(uniforms.use_source, int(time)%30<5);
+    glUniform2f(uniforms.source_dir, uniform_vals.sv_x, uniform_vals.sv_y);
+
 
     // activate textures
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures.vx_vy_p);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textures.source);

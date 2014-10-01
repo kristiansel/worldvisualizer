@@ -11,7 +11,7 @@
 class gpuWeather
 {
     public:
-        gpuWeather(unsigned int dim, float* height_data);
+        gpuWeather(unsigned int dim, float* height_data, unsigned int x_res, unsigned int y_res);
         virtual ~gpuWeather();
 
         void step(float dt);
@@ -52,6 +52,10 @@ class gpuWeather
 
         unsigned int m_timeStep;
         float m_time;
+
+        unsigned int m_dim;
+        unsigned int m_xres;
+        unsigned int m_yres;
 
 };
 
