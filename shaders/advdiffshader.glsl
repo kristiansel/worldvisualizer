@@ -100,6 +100,12 @@ void main()
         out_vy = (1.f-vs_term.a)*out_vy + (vs_term.a)*(out_vy + dt*(vs_term.g - out_vy));
     }
 
+    // apply constant force
+    //float coriolis = 0.001; // acceleration m/s2
+    //out_vx = out_vx + dt*coriolis;
+
+    // introduce terrain drag...
+
     vec4 val = vec4(out_vx, out_vy, field.p, field.a);
 
     x_out = val;

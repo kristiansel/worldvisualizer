@@ -109,7 +109,10 @@
 		<Unit filename="include/pressureshader.h" />
 		<Unit filename="include/renderer.h" />
 		<Unit filename="include/shaderbase.h" />
+		<Unit filename="include/shallowwater.h" />
+		<Unit filename="include/shallowwatershader.h" />
 		<Unit filename="include/velcorrshader.h" />
+		<Unit filename="include/waterdisplayshader.h" />
 		<Unit filename="include/weather.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="shaders/advdiffshader.glsl" />
@@ -118,7 +121,9 @@
 		<Unit filename="shaders/main_shader_frag.glsl" />
 		<Unit filename="shaders/main_shader_vert.glsl" />
 		<Unit filename="shaders/pressureshader.glsl" />
+		<Unit filename="shaders/shallowwatershader.glsl" />
 		<Unit filename="shaders/velcorrshader.glsl" />
+		<Unit filename="shaders/waterdisplayshader.glsl" />
 		<Unit filename="src/advdiffshader.cpp" />
 		<Unit filename="src/comprgassim.cpp" />
 		<Unit filename="src/fluiddisplayshader.cpp" />
@@ -130,7 +135,10 @@
 		<Unit filename="src/pressureshader.cpp" />
 		<Unit filename="src/renderer.cpp" />
 		<Unit filename="src/shaderbase.cpp" />
+		<Unit filename="src/shallowwater.cpp" />
+		<Unit filename="src/shallowwatershader.cpp" />
 		<Unit filename="src/velcorrshader.cpp" />
+		<Unit filename="src/waterdisplayshader.cpp" />
 		<Unit filename="src/weather.cpp" />
 		<Extensions>
 			<code_completion />

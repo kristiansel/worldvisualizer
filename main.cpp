@@ -6,6 +6,10 @@
 #include "weather.h"
 #include "gpuweather.h"
 #include "comprgassim.h"
+#include "shallowwater.h"
+
+#define INCOMP_FLUID
+//#define SHALLOW_WATER
 
 using namespace std;
 
@@ -17,7 +21,7 @@ int main()
     int res_x = 1024;
     int res_y = res_x;
 
-    unsigned int fluid_sim_size = 256;
+    unsigned int fluid_sim_size = 512;
 
     ClosedWorld world((int)(log2(fluid_sim_size)));
     Weather weather(world.m_height_map, 128);
@@ -30,7 +34,7 @@ int main()
 
     // init
     window.create(sf::VideoMode(res_x, res_y), "my test window");
-    window.setVerticalSyncEnabled(false);
+    window.setVerticalSyncEnabled(true);
 
     renderer.init(res_x, res_y);
 
@@ -89,11 +93,17 @@ int main()
 
 //    renderer.loadLayer(1, weather.m_params.S_vx.getDataPtr());
 
+#ifdef INCOMP_FLUID
     // GPU weather
-    //gpuWeather gpu_weather(fluid_sim_size, world.getHeightData(), res_x, res_y);
+    gpuWeather gpu_weather(fluid_sim_size, world.getHeightData(), res_x, res_y);
+#endif // INCOMP_FLUID
 
     // GPU compressible gas
-    ComprGasSim compr_gas_sim(fluid_sim_size, world.getHeightData(), res_x, res_y);
+    //ComprGasSim compr_gas_sim(fluid_sim_size, world.getHeightData(), res_x, res_y);
+#ifdef SHALLOW_WATER
+    // shallow water
+    ShallowWater shallow_water(fluid_sim_size, world.getHeightData(), res_x, res_y);
+#endif
 
 // Slow event based input
     bool running = true;
@@ -134,6 +144,20 @@ int main()
             }
         } // finished processing events
 
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            // left click...
+            // get global mouse position
+            sf::Vector2i position = sf::Mouse::getPosition(window);
+
+            float rel_pos_x = (float)(position.x)/(float)(res_x);
+            float rel_pos_y = (float)(position.y)/(float)(res_y);
+
+#ifdef SHALLOW_WATER
+            shallow_water.stirWater(rel_pos_x, rel_pos_y);
+#endif
+        }
+
 //        for (int i = 0; i<1; i++)
 //        {
 //            weather.step();
@@ -146,16 +170,21 @@ int main()
 
         // draw
         //renderer.draw();
-
-//        for (int i = 0; i<10; i++)
-//            gpu_weather.step(0.01666);
-
-        compr_gas_sim.step(0.01666);
-
+#ifdef INCOMP_FLUID
+        for (int i = 0; i<10; i++)
+            gpu_weather.step(0.01666);
+#endif
+        //compr_gas_sim.step(0.01666);
+#ifdef SHALLOW_WATER
+        for (int i = 0; i<30; i++)
+            shallow_water.step(0.01666);
+#endif
         window.display();
 
         dt = clock.getElapsedTime().asSeconds();
         //std::cout << "dt = " << dt << "\n";
+
+        //std::cin.get();
     }
 
     return 0;
