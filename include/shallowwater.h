@@ -1,8 +1,20 @@
 #ifndef SHALLOWWATER_H
 #define SHALLOWWATER_H
 
+//#define SHALLOW_EXPLICIT
+#define SHALLOW_IMPLICIT
+
+#ifdef SHALLOW_EXPLICIT
 #include "shallowwatershader.h"
+#endif
+
+#ifdef SHALLOW_IMPLICIT
+#include "shallowimplicitshader.h"
+#endif
+
 #include "waterdisplayshader.h"
+
+
 
 class ShallowWater
 {
@@ -19,8 +31,15 @@ class ShallowWater
                     int i, int j, int dim,
                     float* field, float val_in_box[4]);
     private:
+#ifdef SHALLOW_EXPLICIT
         // Advection/Diffusion shader
         ShallowWaterShader m_shallowWaterShader;
+#endif
+
+#ifdef SHALLOW_IMPLICIT
+        // Advection/Diffusion shader
+        ShallowImplicitShader m_shallowWaterShader;
+#endif
 
 //        // Display shader
         WaterDisplayShader m_waterDisplayShader;

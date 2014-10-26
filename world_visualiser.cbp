@@ -109,6 +109,7 @@
 		<Unit filename="include/pressureshader.h" />
 		<Unit filename="include/renderer.h" />
 		<Unit filename="include/shaderbase.h" />
+		<Unit filename="include/shallowimplicitshader.h" />
 		<Unit filename="include/shallowwater.h" />
 		<Unit filename="include/shallowwatershader.h" />
 		<Unit filename="include/velcorrshader.h" />
@@ -121,6 +122,7 @@
 		<Unit filename="shaders/main_shader_frag.glsl" />
 		<Unit filename="shaders/main_shader_vert.glsl" />
 		<Unit filename="shaders/pressureshader.glsl" />
+		<Unit filename="shaders/shallowimplicitshader.glsl" />
 		<Unit filename="shaders/shallowwatershader.glsl" />
 		<Unit filename="shaders/velcorrshader.glsl" />
 		<Unit filename="shaders/waterdisplayshader.glsl" />
@@ -135,6 +137,7 @@
 		<Unit filename="src/pressureshader.cpp" />
 		<Unit filename="src/renderer.cpp" />
 		<Unit filename="src/shaderbase.cpp" />
+		<Unit filename="src/shallowimplicitshader.cpp" />
 		<Unit filename="src/shallowwater.cpp" />
 		<Unit filename="src/shallowwatershader.cpp" />
 		<Unit filename="src/velcorrshader.cpp" />

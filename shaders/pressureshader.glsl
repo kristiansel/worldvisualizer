@@ -37,7 +37,7 @@ void main()
 
     float div = dvx_dx + dvy_dy;
 
-    float next_p = (field_W.b + field_E.b + field_N.b + field_S.b - dl*dl*div*rho/dl) / 4.f;
+    float next_p = (field_W.b + field_E.b + field_N.b + field_S.b - dl*dl*div*rho/dt) / 4.f;
 
     x_out = vec4(field.rg, next_p, field.a);
 

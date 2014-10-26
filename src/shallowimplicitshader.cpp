@@ -1,11 +1,11 @@
-#include "shallowwatershader.h"
+#include "shallowimplicitshader.h"
 
-ShallowWaterShader::ShallowWaterShader()
+ShallowImplicitShader::ShallowImplicitShader()
 {
     //ctor
 }
 
-void ShallowWaterShader::init(unsigned int dim,
+void ShallowImplicitShader::init(unsigned int dim,
                          float* u_v_h,
                          float* height,
                          float gravity,
@@ -13,11 +13,14 @@ void ShallowWaterShader::init(unsigned int dim,
 {
     // Init its own shader
     // with input uniforms
-    ShaderBase::load("shaders/main_shader_vert.glsl", "shaders/shallowwatershader.glsl");
+    ShaderBase::load("shaders/main_shader_vert.glsl", "shaders/shallowimplicitshader.glsl");
 
  // set the uniform locations
+    uniforms.x_t1k0 = glGetUniformLocation(getProgramID(), "x_t1k0");
+    glUniform1i(uniforms.x_t1k0, 0);
+
     uniforms.x_t0 = glGetUniformLocation(getProgramID(), "x_t0");
-    glUniform1i(uniforms.x_t0, 0);
+    glUniform1i(uniforms.x_t0, 2);
 
     uniforms.height = glGetUniformLocation(getProgramID(), "height");
     glUniform1i(uniforms.height, 1);
@@ -71,7 +74,30 @@ void ShallowWaterShader::init(unsigned int dim,
         std::cout<<"\n";
     }
 
-    last_ping_pong_tex = buffers.texture; // initualize framebuffer 1, (start by drawing to 2)
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    //Generate a draw-to-texture3
+    glGenTextures(1, &buffers.texture3);
+    glBindTexture(GL_TEXTURE_2D, buffers.texture3);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dim, dim, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    //generate framebuffer
+    glGenFramebuffers(1, &buffers.frame3);
+    glBindFramebuffer(GL_FRAMEBUFFER, buffers.frame3);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, buffers.texture3, 0);
+
+    if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        fprintf(stderr, "glCheckFramebufferStatus original image: error %p", status);
+        std::cout<<"\n";
+    }
+
+    last_timestep_texture = buffers.texture; // initualize framebuffer 1, (start by drawing to 2)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -107,11 +133,13 @@ void ShallowWaterShader::init(unsigned int dim,
 
     m_dim = dim;
 
-    std::cout << "finished initializing shallowwater shader\n";
+    std::cout << "finished initializing fully implicit shallowwater shader\n";
 }
 
-GLuint ShallowWaterShader::step(float dt, bool draw_to_screen)
+GLuint ShallowImplicitShader::step(float dt, bool draw_to_screen)
 {
+//    std::cout << "=====================starting timestep\n";
+
     // switch to
     ShaderBase::switchTo();
 
@@ -139,57 +167,120 @@ GLuint ShallowWaterShader::step(float dt, bool draw_to_screen)
         0                   // offset of first element
     );
 
-    GLuint read_texture; // start from the previous timestep
-    GLuint write_buffer; // start by writing to first framebuffer
+    GLuint ping_pong_tex;
+    GLuint ping_pong_buf;
 
-    // swap read and write
-    if (last_ping_pong_tex == buffers.texture)    // previous wrote 1, read 2
+    GLuint ping_pong_tex2;
+    GLuint ping_pong_buf2;
+
+    if (last_timestep_texture == buffers.texture)
     {
-        read_texture = buffers.texture;
-        write_buffer = buffers.frame2;
+        ping_pong_tex = buffers.texture2;
+        ping_pong_buf = buffers.frame2;
+
+        ping_pong_tex2 = buffers.texture3;
+        ping_pong_buf2 = buffers.frame3;
     }
-    else                                    // previous wrote 2, read 1
+    else if (last_timestep_texture == buffers.texture2)
     {
-        read_texture = buffers.texture2;
-        write_buffer = buffers.frame;
+        ping_pong_tex = buffers.texture;
+        ping_pong_buf = buffers.frame;
+
+        ping_pong_tex2 = buffers.texture3;
+        ping_pong_buf2 = buffers.frame3;
+    }
+    else if (last_timestep_texture == buffers.texture3)
+    {
+        ping_pong_tex = buffers.texture;
+        ping_pong_buf = buffers.frame;
+
+        ping_pong_tex2 = buffers.texture2;
+        ping_pong_buf2 = buffers.frame2;
     }
 
+    GLuint last_ping_pong_tex = last_timestep_texture;
 
-    // activate textures
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, read_texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    std::cout << "ping_pong_tex:" << ping_pong_tex << "\n";
+//    std::cout << "ping_pong_buf:" << ping_pong_buf << "\n";
+//    std::cout << "ping_pong_tex2:" << ping_pong_tex2 << "\n";
+//    std::cout << "ping_pong_buf2:" << ping_pong_buf2 << "\n";
+//    std::cout << "last_timestep_texture:" << last_timestep_texture << "\n";
 
-    // activate textures
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, textures.height);
+    for (int i = 0; i<10; i++)
+    {
+        GLuint read_texture; // start iterating from previous timestep
+        GLuint write_buffer; // start by writing to first framebuffer
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        // swap read and write
+        if (last_ping_pong_tex == ping_pong_tex)    // previous wrote 1, read 2
+        {
+            read_texture = ping_pong_tex;
+            write_buffer = ping_pong_buf2;
+        }
+        else if (i==0)// first iteration
+        {
+            read_texture = last_timestep_texture;
+            write_buffer = ping_pong_buf2;
+        }
+        else    // previous wrote 2, read 1
+        {
+            read_texture = ping_pong_tex2;
+            write_buffer = ping_pong_buf;
+        }
 
-    // bind framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, write_buffer);
 
-    // render
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//        std::cout << "==========starting iteration\n";
+//
+//        std::cout << "read_texture:" << read_texture << "\n";
+//        std::cout << "write_buffer:" << write_buffer << "\n";
+//        std::cout << "last_timestep_texture:" << last_timestep_texture << "\n";
 
-    // stop drawing to framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    last_ping_pong_tex = (write_buffer == buffers.frame) ? buffers.texture : buffers.texture2;
+        // activate textures
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, read_texture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        // activate textures
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textures.height);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        // activate textures
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, last_timestep_texture);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        // bind framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, write_buffer);
+
+        // render
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // stop drawing to framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        last_ping_pong_tex = (write_buffer == ping_pong_buf) ? ping_pong_tex : ping_pong_tex2;
+
+    }
+
+    last_timestep_texture = last_ping_pong_tex;
 
     if (draw_to_screen) glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    //system("pause");
-
-    return last_ping_pong_tex;
+    return last_timestep_texture;
 }
 
-void ShallowWaterShader::writeBackResults(unsigned int dim, float* u_v_h)
+void ShallowImplicitShader::writeBackResults(unsigned int dim, float* u_v_h)
 {
-    glBindTexture(GL_TEXTURE_2D, last_ping_pong_tex);
+    glBindTexture(GL_TEXTURE_2D, last_timestep_texture);
     glGetTexImage( GL_TEXTURE_2D,
                         0,
                         GL_RGBA,
@@ -197,7 +288,7 @@ void ShallowWaterShader::writeBackResults(unsigned int dim, float* u_v_h)
                         u_v_h);
 }
 
-void ShallowWaterShader::stirWater(float rel_x, float rel_y)
+void ShallowImplicitShader::stirWater(float rel_x, float rel_y)
 {
     float scr_perc = 0.1;
 
@@ -220,7 +311,7 @@ void ShallowWaterShader::stirWater(float rel_x, float rel_y)
         }
     }
 
-    glBindTexture(GL_TEXTURE_2D, last_ping_pong_tex); // being read next
+    glBindTexture(GL_TEXTURE_2D, last_timestep_texture); // being read next
     glTexSubImage2D(GL_TEXTURE_2D, 0, offset_x, offset_y, width, height, GL_RGBA, GL_FLOAT, u_v_h);
 
 
@@ -228,7 +319,7 @@ void ShallowWaterShader::stirWater(float rel_x, float rel_y)
 
 
 
-ShallowWaterShader::~ShallowWaterShader()
+ShallowImplicitShader::~ShallowImplicitShader()
 {
     //dtor
 }

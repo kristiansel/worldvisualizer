@@ -49,6 +49,8 @@ ShallowWater::ShallowWater(unsigned int dim, float* height_data, unsigned int x_
 
     m_waterDisplayShader.init(m_shallowWaterShader.getHeightTex());
 
+
+
     delete [] u_v_h;
 
     m_dim = dim;

@@ -160,7 +160,7 @@
 1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/weathermap.cpp
 	"weathermap.h"
 
-1412989556 source:/home/kristian/dev/git/worldvisualizer/main.cpp
+1413574167 source:/home/kristian/dev/git/worldvisualizer/main.cpp
 	<iostream>
 	<SFML/Window.hpp>
 	"renderer.h"
@@ -273,17 +273,18 @@
 	"gasjacobishader.h"
 	"gasvisualshader.h"
 
-1412901469 source:/home/kristian/dev/git/worldvisualizer/src/shallowwatershader.cpp
+1413573656 source:/home/kristian/dev/git/worldvisualizer/src/shallowwatershader.cpp
 	"shallowwatershader.h"
 
 1412900969 /home/kristian/dev/git/worldvisualizer/include/shallowwatershader.h
 	"shaderbase.h"
 
-1412941806 source:/home/kristian/dev/git/worldvisualizer/src/shallowwater.cpp
+1413568629 source:/home/kristian/dev/git/worldvisualizer/src/shallowwater.cpp
 	"shallowwater.h"
 
-1412900503 /home/kristian/dev/git/worldvisualizer/include/shallowwater.h
+1413568772 /home/kristian/dev/git/worldvisualizer/include/shallowwater.h
 	"shallowwatershader.h"
+	"shallowimplicitshader.h"
 	"waterdisplayshader.h"
 
 1412893595 source:/home/kristian/dev/git/worldvisualizer/src/waterdisplayshader.cpp
@@ -291,4 +292,10 @@
 
 1412883267 /home/kristian/dev/git/worldvisualizer/include/waterdisplayshader.h
 	"shaderbase.h"
+
+1413572923 /home/kristian/dev/git/worldvisualizer/include/shallowimplicitshader.h
+	"shaderbase.h"
+
+1413752287 source:/home/kristian/dev/git/worldvisualizer/src/shallowimplicitshader.cpp
+	"shallowimplicitshader.h"
 

@@ -8,8 +8,8 @@
 #include "comprgassim.h"
 #include "shallowwater.h"
 
-#define INCOMP_FLUID
-//#define SHALLOW_WATER
+//#define INCOMP_FLUID
+#define SHALLOW_WATER
 
 using namespace std;
 
@@ -176,7 +176,7 @@ int main()
 #endif
         //compr_gas_sim.step(0.01666);
 #ifdef SHALLOW_WATER
-        for (int i = 0; i<30; i++)
+        for (int i = 0; i<10; i++)
             shallow_water.step(0.01666);
 #endif
         window.display();
