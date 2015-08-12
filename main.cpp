@@ -8,8 +8,8 @@
 #include "comprgassim.h"
 #include "shallowwater.h"
 
-//#define INCOMP_FLUID
-#define SHALLOW_WATER
+#define INCOMP_FLUID
+//#define SHALLOW_WATER
 
 using namespace std;
 
