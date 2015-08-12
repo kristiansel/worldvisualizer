@@ -23,7 +23,7 @@
 *.exe
 *.out
 *.app
-AncientWorldSim
+world_visualiser
 
 # Generated CMake files
 CMakeCache.txt
