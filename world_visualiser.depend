@@ -160,7 +160,7 @@
 1406982323 source:/home/kristian/dev/git/worldvisualizer/closed_world/src/weathermap.cpp
 	"weathermap.h"
 
-1413574167 source:/home/kristian/dev/git/worldvisualizer/main.cpp
+1434052878 source:/home/kristian/dev/git/worldvisualizer/main.cpp
 	<iostream>
 	<SFML/Window.hpp>
 	"renderer.h"
